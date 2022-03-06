@@ -3,11 +3,14 @@
 
 package koans
 
+import koans.solutions.Account.{getAccount, openAccount}
+import koans.solutions.OpenAccount
 import org.scalatest.Matchers
 import support.BlankValues._
 import support.StopOnFirstFailure
-import scala.BigDecimal.{int2bigDecimal, double2bigDecimal}
-import org.scalatest.{SeveredStackTraces, FunSpec}
+
+import scala.BigDecimal.{double2bigDecimal, int2bigDecimal}
+import org.scalatest.{FunSpec, SeveredStackTraces}
 
 /*
  * Below is a spec for a bank account handler method. The case classes are provided for deposit,
@@ -82,8 +85,32 @@ object Account {
       // OTHER CASES GO HERE!
       // The next line should also be replaced - it's just to get things to compile, by now you
       // should know why (the rules of scala type inference)
-      case BalanceEnquiry(accountType, accountNum) => 0
-      
+      // case BalanceEnquiry(accountType, accountNum) => 0
+      case BalanceEnquiry(accountType, accountNumber) => getAccount(accountType, accountNumber).balance
+
+      case Deposit(accountType, accountNumber, amount) => getAccount(accountType, accountNumber).deposit(amount)
+
+      case Withdrawal(Savings, accountNumber, amount) if (getAccount(Savings, accountNumber).balance < amount) =>
+        throw new IllegalStateException
+
+      case Withdrawal(Savings, accountNumber, amount) => getAccount(Savings, accountNumber).withdrawal(amount)
+
+      case Withdrawal(Checking, accountNumber, amount) if (getAccount(Checking, accountNumber).balance + 1000 < amount) =>
+        throw new IllegalStateException
+
+      case Withdrawal(Checking, accountNumber, amount) => getAccount(Checking, accountNumber).withdrawal(amount)
+
+      case OpenAccount(accountType, accountNum) =>
+        try {
+          getAccount(accountType, accountNum)
+          throw new IllegalStateException
+        }
+        catch {
+          case e: NoSuchElementException =>
+        }
+        openAccount(accountType, accountNum)
+
+
       case _ => throw new IllegalArgumentException("Unknown transaction type")
     }
 }
