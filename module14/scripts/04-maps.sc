@@ -9,6 +9,7 @@ numWords.get(1) // use this
 numWords.getOrElse(1, "?") // or this
 
 val nums = List(1,2,3,2,5)
+numWords
 nums.map(numWords)
 
 for ((num, word) <- numWords) {

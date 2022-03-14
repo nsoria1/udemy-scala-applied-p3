@@ -50,7 +50,7 @@ class Module14 extends FunSuite with Matchers with StopOnFirstFailure with Sever
 
   test("Combo list zipped with index") {
     // this is the part you have to fill in...
-    val comboListWithIndex = __
+    val comboListWithIndex = comboSetsForSequences(listOfSeqs).zipWithIndex
     
     comboListWithIndex.toString should be ("List((Set(G, C),0), (Set(T, A, -),1), (Set(A, C),2), (Set(A),3), (Set(G, C),4), (Set(C),5), (Set(T),6), (Set(T, -, A),7), (Set(A),8), (Set(C),9))")
   }
@@ -67,7 +67,7 @@ class Module14 extends FunSuite with Matchers with StopOnFirstFailure with Sever
     // make the filteredListWithIndex hold the filtered list, with the indices - either as an inline
     // solution, or as a function, your choice. At the same time as you are filtering, reverse the order
     // so that the index is first, and the set is second
-    val filteredListWithIndex = __
+    val filteredListWithIndex = comboSetsForSequences(listOfSeqs).zipWithIndex.filterNot(_._1.size == 1).map(_.swap)
 
     filteredListWithIndex.toString should be ("List((0,Set(G, C)), (1,Set(T, A, -)), (2,Set(A, C)), (4,Set(G, C)), (7,Set(T, -, A)))")
   }
@@ -84,7 +84,7 @@ class Module14 extends FunSuite with Matchers with StopOnFirstFailure with Sever
   test("Get a mutation map from a list of sequences") {
  
     // need to change this so that instead of an empty map, you get the mutation map in it
-    val mutationMap = Map[Int, Set[Char]]()
+    val mutationMap = comboSetsForSequences(listOfSeqs).zipWithIndex.filterNot(_._1.size == 1).map(_.swap).toMap
 
     mutationMap should be (Map(0 -> Set('G', 'C'), 1 -> Set('T', 'A', '-'), 2 -> Set('A', 'C'), 4 -> Set('G', 'C'), 7 -> Set('T', '-', 'A')))
   }
@@ -100,7 +100,7 @@ class Module14 extends FunSuite with Matchers with StopOnFirstFailure with Sever
     val t = (1,3,5,"seven")  // a tuple
 
     // convert it below
-    val tAsList = __
+    val tAsList = t.productIterator.toList
 
     tAsList should be (List(1,3,5,"seven"))
 
@@ -108,12 +108,16 @@ class Module14 extends FunSuite with Matchers with StopOnFirstFailure with Sever
     val a = Array(3,5,'7',"nine")
 
     // convert it below
-    val aAsList = __
+    val aAsList = a.toList
 
     aAsList should be (List(3,5,'7',"nine"))
 
 
     val s = Set(2,3,5,7,11)
+
+    val sAsList = s.toList
+
+    sAsList.sorted should be (List(2,3,5,7,11))
 
     // tricky one - convert s to a list and then write a test for it - does it work? If not, why not, and
     // can you find a safe way to make it work?
@@ -128,11 +132,41 @@ class Module14 extends FunSuite with Matchers with StopOnFirstFailure with Sever
   //
   // 1. Starting with a map of keys and values, create a list of tuples of the key value pairs sorted by key,
   // then do the same thing sorted by value. Try writing your tests first and getting them to work that way
-  //
+
+  test ("From map to sorted tuple") {
+    val mapData = Map(1 -> "One", 2 -> "Two", 3 -> "Three", 4 -> "Four", 5 -> "Five")
+
+    val mapToTuple = mapData.keys.toList.sorted :: mapData.values.toList.sorted :: Nil
+
+    mapToTuple should be (List(List(1,2,3,4,5), List("Five", "Four", "One", "Three", "Two")))
+  }
   // 2. Following the examples in the test above - converting things to Lists, try converting things to Seq or
   // Traversable instead. Have a look around the methods on the various collections, and see what else you
   // can find out about them.
-  //
+
+  test ("Convert various types to Seq") {
+    val t = (1,3,5,"seven")  // a tuple
+
+    // convert it below
+    val tAsList = t.productIterator.toSeq
+
+    tAsList should be (Seq(1,3,5,"seven"))
+
+    val a = Array(3,5,'7',"nine")
+
+    // convert it below
+    val aAsList = a.toSeq
+
+    aAsList should be (Seq(3,5,'7',"nine"))
+
+
+    val s = Set(2,3,5,7,11)
+
+    val sAsList = s.toSeq
+
+    sAsList.sorted should be (Seq(2,3,5,7,11))
+  }
+
   // 3. Also from the above example, extend the tests to see what generic type signature the Lists or Sequences
   // have for particular sequences of data, for example, what type does List(1, 2.0, 3.333) have? How about List("Hello", 'a')
   //

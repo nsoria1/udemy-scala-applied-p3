@@ -3,6 +3,7 @@ val nums = List(2,3,5,8,13,21)
 
 val sumNums = nums.foldLeft(0)((a, b) => a + b)
 val prodNums = nums.foldLeft(1)(_ * _)
+val prodNumsT = nums.foldLeft(2)(_ * _)
 
 val asString = words.foldLeft("")(_ + ", " + _)
 
